@@ -38,9 +38,7 @@ try:
 	import os
 	from botmodul import debugOperation
 	from tkinter import *
-except ImportError as e:
-	print("Tolong download modul: https://github.com/python-telegram-bot/python-telegram-bot")
-	exit()
+
 
 #Isi token bot kamu
 tokenbot = '633203485:AAG-GnSKAaUoaQZgrjifBQHG6qWhtSez26Q'
