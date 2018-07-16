@@ -1,0 +1,171 @@
+#Python Source Code v4
+#By Muhammad Arkhan
+#English Translations by Dharmaraj
+#--------------------------------------------------------------------------------------------------------------------
+#Modul ini menggunakan python-telegram-bot.
+#Silahkan didownload terlebih dahulu!
+#https://github.com/python-telegram-bot/python-telegram-bot
+#--------------------------------------------------------------------------------------------------------------------
+#Script Bot v1:
+#-First Release!
+#-added response function for example
+#-added polling system
+#-added logging for handle error
+#-added dispatcher for handle message
+#
+#Script Bot v2:
+#-remake syntax code for good looking to read
+#-added some explain about how-it-work?
+#-added started bot message
+#-added checking tokenbot
+#-added checking module for handle import error
+#
+#Script Bot v3:
+#-Added Debug Mode! For helping testing bot in polling
+#-remake started bot message
+#-added Bot Name for identity
+#-added import run_async for handle multiple request from users (If we don't use this, will be big BUG!)
+#-added webhook syntax for Heroku (Another Web Hosting Coming Soon!)
+#
+#Script Bot v4:
+#Disable Command Echo (Make not spamming!)
+#Added GUI for Bot (Still Build)
+#####################################################################################################################
+   
+#import Updater
+try:
+	from telegram.ext import Updater
+	import os
+	from botmodul import debugOperation
+	from tkinter import *
+except ImportError as e:
+	print("Tolong download modul: https://github.com/python-telegram-bot/python-telegram-bot")
+	exit()
+
+#Isi token bot kamu
+tokenbot = '633203485:AAG-GnSKAaUoaQZgrjifBQHG6qWhtSez26Q'
+namebot	 = 'GOOC Tester'
+ScriptVer= 'v1'
+
+#menset gui Tkinter
+root = Tk()
+
+#Debug Mode, berguna dlm mengetest bot dengan polling. Ganti False dengan True jika ingin debug dihidupkan
+debug = False
+debugs= debugOperation(debug)
+
+#jebakan bagi yang tidak mengisi token (jangan dihapus!)
+#Menset variabel tokenbot agar ditangani oleh Updater
+try:
+	updater = Updater(tokenbot)
+except ValueError as e:
+	print("Tolong masukkan token bot!")
+	exit()
+
+#Webhook(Heroku):
+#-------------------------------
+#PORT = int(os.environ.get('PORT', '5000'))
+#updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
+#
+#updater.bot.start_webhook("https://<appname>.herokuapp.com/" + TOKEN)
+#--------------------------------
+
+#Mengambil dispatcher untuk menangani command
+dispatcher = updater.dispatcher
+
+#####################################################################################################################
+
+#mengimpor logging untuk menangani error
+import logging
+
+#menset peraturan logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+
+#####################################################################################################################
+
+#Mengimpor telegram (Untuk Markdown / html)
+#Mengimpor run_async (untuk menangani masalah permintaan user)
+try:
+	import telegram
+	from telegram.ext.dispatcher import run_async
+except ImportError as e:
+	print("Masalah: ", e)
+	exit()
+
+#####################################################################################################################
+
+#Kumpulan Respon ke User
+#Silahkan anda buat respon sendiri untuk latihan :D
+
+@run_async #memanggil run_async untuk menangani fungsi start
+def start(bot, update):
+	global debugs
+	msg="Halo!\nBisa saya bantu?"
+	debugs.Send_Message(chat_id=update.message.chat_id, text=msg)
+	bot.send_message(chat_id=update.message.chat_id, text=msg)
+
+@run_async #memanggil run_async untuk menangani fungsi halo
+def halo(bot, update):
+	global debugs
+	msg="Halo pengguna!"
+	debugs.Send_Message(chat_id=update.message.chat_id, text=msg)
+	bot.send_message(chat_id=update.message.chat_id, text=msg)
+
+#####################################################################################################################
+
+#Mengimpor CommandHandler untuk menangani command
+try:
+	from telegram.ext import CommandHandler
+except ImportError as e:
+	print("Modul error!")
+	exit()
+
+#####################################################################################################################
+
+#Menampung Command
+
+start_handler = CommandHandler('start', start) #contoh: [nama command]_handler = CommandHandler('[command]', [fungsi command])
+halo_handler  = CommandHandler('halo', halo)
+
+#####################################################################################################################
+
+#Menampung Semua Variabel Command dan ditangani oleh dispatcher
+dispatcher.add_handler(start_handler)
+dispatcher.add_handler(halo_handler) #contoh -> dispatcher.add_handler([variable handler])
+
+#####################################################################################################################
+
+#Fungsi untuk Memulai Polling
+def updatestart():
+	global namebot
+	global ScriptVer
+	print(namebot, " ", ScriptVer, " : start!")
+	updater.start_polling()
+
+#Fungsi untuk Memberhentikan polling
+def updatestop():
+	updater.stop()
+	os.system('cls')
+	print("Bot berhenti..")
+
+#updater.idle() #untuk menjalankan webhook(heroku)
+
+#####################################################################################################################
+
+#GUI for bot
+
+#Title of GUI
+root.title(namebot+' '+ScriptVer+' GUI')
+
+#Button
+startbutton = Button(root, text='Start Bot', command=updatestart)
+stopbutton  = Button(root, text='Stop Bot', command=updatestop)
+
+#Set place for button
+startbutton.grid(column=0, row=0)
+stopbutton.grid(column=1, row=0)
+
+#start GUI
+root.mainloop()
+
+#####################################################################################################################
